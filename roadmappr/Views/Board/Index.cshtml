@@ -1,0 +1,53 @@
+﻿@model roadmappr.Models.ViewModels.BoardViewModel
+@{
+    Layout = null;
+}
+<!-- Loaded from @Model.Source valid until @Model.TrelloBoard.LastDbUpdate.AddMinutes(60) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@Model.TrelloBoard.Name</title>
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="/css/site.css" rel="stylesheet" type="text/css" media="all" />
+    <script src="/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="scrolling-wrapper">
+
+    <div class="row">
+        @{
+            foreach (var list in Model.TrelloBoard.Lists.Where(c => c.Closed == "false").ToList())
+            {
+                <div class="col-md-3 text-center">
+                    <h2 class="p-3">@list.Name</h2>
+                    @foreach (var card in Model.TrelloBoard.Cards.Where(c => c.IdList == list.Id).ToList())
+                    {
+                        <div class="card-container">
+                            <article class="card">
+                                @{
+                                    if (card.Labels.Any())
+                                    {
+                                        <div class="card__head color-@card.Labels.First().Color?.ToLower()">
+                                            <div>@card.Labels.First().Name</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="card__head color-"><div></div></div>
+                                    }
+                                }
+                                <div class="card__body">
+                                    <h3 class="card__title"><a href="@card.Url" target="_blank">@card.Name</a></h3>
+                                </div>
+                            </article>
+                        </div>
+                    }
+                </div>
+            }
+            
+        }
+    </div>
+</div>
+</body>
+</html>
