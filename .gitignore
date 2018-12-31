@@ -2,6 +2,8 @@
 roadmappr/obj/
 
 roadmappr/bin/
+roadmappr/trello.db
 roadmapprTests/obj/
 roadmapprTests/bin/
 TestResults
+.vs/

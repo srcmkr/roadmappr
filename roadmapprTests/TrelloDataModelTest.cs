@@ -55,7 +55,6 @@ namespace roadmapprTests
                 Source = "test",
                 TrelloBoard = new Trello()
             };
-
             Assert.IsNotNull(model.Source);
             Assert.IsNotNull(model.TrelloBoard);
         }
