@@ -27,6 +27,10 @@ namespace roadmappr.Models
         {
             var apiMiddleware = new ApiMiddleware();
             var apiResponse = await apiMiddleware.Get(string.Concat("https://trello.com/b/", _trelloUrl, ".json"));
+            Source = "online";
+            apiResponse.LastDbUpdate = DateTime.Now;
+            AddOrUpdate(apiResponse);
+
             return apiResponse;
         }
 
@@ -50,22 +54,29 @@ namespace roadmappr.Models
             return null;
         }
 
-        public void AddOrUpdate(Trello trelloBoard)
+        public bool AddOrUpdate(Trello trelloBoard)
         {
-            using (var db = new LiteDatabase(new ConnectionString
+            try
             {
-                Filename = "trello.db"
-            }))
-            {
-                var collection = db.GetCollection<Trello>("roadmappr");
-                if (collection.FindById(_trelloUrl) != null)
+                using (var db = new LiteDatabase(new ConnectionString
                 {
-                    collection.Update(_trelloUrl, trelloBoard);
-                }
-                else
+                    Filename = "trello.db"
+                }))
                 {
+                    var collection = db.GetCollection<Trello>("roadmappr");
+                    if (collection.FindById(_trelloUrl) != null)
+                    {
+                        collection.Update(_trelloUrl, trelloBoard);
+                        return true;
+                    }
+
                     collection.Insert(_trelloUrl, trelloBoard);
+                    return true;
                 }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -79,11 +90,6 @@ namespace roadmappr.Models
                 {
                     card.Desc = card.DescLimited();
                 }
-
-                trelloBoard.LastDbUpdate = DateTime.Now;
-                Source = "online";
-
-                AddOrUpdate(trelloBoard);
                 IsLoaded = true;
             }
 
